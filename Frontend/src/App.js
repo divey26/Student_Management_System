@@ -2,7 +2,8 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import AddStudent from "./Components/students/AddStudent";
-import AddEditTeacher from "./Components/Teachers/AddEditTeacher";
+import ViewAllStudents from "./Components/students/ViewStudent";
+import AddMarks from "./Components/Teachers/AddMarks";
 
 
 
@@ -11,10 +12,10 @@ function App() {
 
           <Router>
             <Routes>
-              <Route path="/" element={<AddStudent />} />
-              <Route path="/staffs" element={<AddEditTeacher />} />
-
-
+            <Route path="/" element={<AddStudent />} />
+            <Route path="/students" element={<ViewAllStudents />} />
+            <Route path="/students/:id/marks" element={<AddMarks />} />
+            <Route path="/students/:id" element={<ViewAllStudents />} />
             </Routes>
           </Router>
 
