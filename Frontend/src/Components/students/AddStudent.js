@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, InputNumber, Button, Select, message } from 'antd';
 import axios from 'axios';
-
+import Layoutnew from '../../Layout';
 const { Option } = Select;
 
 const StudentForm = () => {

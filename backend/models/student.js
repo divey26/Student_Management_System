@@ -38,6 +38,11 @@ const StudentSchema = new mongoose.Schema({
     min: 1,
     max: 10,
   },
+  class: {
+    type: String,
+    enum: ['A', 'B', 'C', 'D', 'E'],  // Only allows these values
+    required: true,
+  },
   currentTerm: {
     type: Number,
     required: true,
