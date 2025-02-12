@@ -1,13 +1,13 @@
+// ViewAllStudents.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { Table, Typography, Button } from 'antd';
 
 const { Title } = Typography;
 
 const ViewAllStudents = () => {
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -16,8 +16,6 @@ const ViewAllStudents = () => {
         setStudents(res.data);
       } catch (error) {
         console.error('Error fetching students:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchStudents();
@@ -25,14 +23,19 @@ const ViewAllStudents = () => {
 
   const columns = [
     {
+      title: 'Index Number',
+      dataIndex: 'indexNo',
+      key: 'indexNo',
+    },
+    {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Index Number',
-      dataIndex: 'indexNo',
-      key: 'indexNo',
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
     },
     {
       title: 'Grade',
@@ -40,11 +43,11 @@ const ViewAllStudents = () => {
       key: 'grade',
     },
     {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
+      title: 'Actions',
+      key: 'actions',
+      render: (text, record) => (
         <Link to={`/students/${record._id}/marks`}>
-          <Button type="primary">View</Button>
+          <Button type="primary">Enter/View Marks</Button>
         </Link>
       ),
     },
@@ -53,13 +56,7 @@ const ViewAllStudents = () => {
   return (
     <div style={{ padding: '20px' }}>
       <Title level={2}>All Students</Title>
-      <Table 
-        dataSource={students} 
-        columns={columns} 
-        rowKey="_id"
-        loading={loading}
-        bordered
-      />
+      <Table columns={columns} dataSource={students} rowKey="_id" />
     </div>
   );
 };

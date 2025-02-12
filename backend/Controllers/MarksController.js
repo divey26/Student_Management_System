@@ -43,19 +43,19 @@ const getAllStudents = async (req, res) => {
 };
 
 // Fetch marks for a specific student
-const getMarksByStudent = async (req, res) => {
-    const { studentId } = req.params;
-  
+  const getMarksByStudent = async (req, res) => {
+    const { id } = req.params;
     try {
-      const marks = await Marks.find({ studentId }).populate('studentId', 'name indexNo');
-      if (!marks.length) {
-        return res.status(404).json({ error: 'No marks found for this student.' });
+      const student = await Student.findById(id);
+      if (!student) {
+        return res.status(404).json({ error: 'Student not found' });
       }
-      res.json(marks);
+      res.json(student);
     } catch (error) {
-      res.status(500).json({ error: 'Error fetching marks.' });
+      res.status(500).json({ error: 'Error fetching student' });
     }
   };
+  
   
   module.exports = { addMarks, getAllStudents, getMarksByStudent };
   

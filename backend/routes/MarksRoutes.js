@@ -9,6 +9,6 @@ router.post('/marks', addMarks);
 // Route to get all students
 router.get('/std', getAllStudents);
 
-router.get('/marks/:studentId', getMarksByStudent);
+router.get('/std/:id', getMarksByStudent);
 
 module.exports = router;
