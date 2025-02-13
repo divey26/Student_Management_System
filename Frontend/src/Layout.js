@@ -1,66 +1,48 @@
 import React, { useState, useEffect } from "react";
-import {
-  HomeOutlined,
-  LogoutOutlined,
-  UserSwitchOutlined,
-  CalendarOutlined,
-  AppstoreAddOutlined,
-  CheckCircleOutlined,
-  ApartmentOutlined,
-  StockOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, theme, Button } from "antd";
+import { HomeOutlined, UserSwitchOutlined, LogoutOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { Layout, Menu, Button } from "antd";
 import { FloatButton } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
-const loggedInUserType = localStorage.getItem("loggedInUserType");
+const { SubMenu } = Menu;
 
 const adminUserItems = [
+  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
   {
-    key: "dashboard",
+    key: "teacher",
     icon: <HomeOutlined />,
-    label: "Home",
+    label: "Teacher",
+    children: [
+      { key: "std",icon: <HomeOutlined />, label: "Add Student" },
+      { key: "marks",icon: <HomeOutlined />, label: "All Students" },
+      {
+        key: "cls",
+        icon: <HomeOutlined />,
+        label: "Classes",
+        children: [
+          { key: "grade6", icon: <UserSwitchOutlined />, label: "Grade 6" },
+          { key: "grade7", icon: <UserSwitchOutlined />, label: "Grade 7" },
+          { key: "grade8", icon: <UserSwitchOutlined />, label: "Grade 8" },
+          { key: "grade9", icon: <UserSwitchOutlined />, label: "Grade 9" },
+         
+        ],
+      },
+    ],
   },
-
-  {
-    key: "categories",
-    icon: <HomeOutlined />,
-    label: "Category",
-  },
-  {
-
-    key: "grades",
-    icon: <HomeOutlined />,
-    label: "Grades",
-  
-  },
-
-  {
-    key: "timer",
-    icon: <HomeOutlined />,
-    label: "Timer",
-  
-  },
-  
-  {
-    key: "addpro",
-    icon: <HomeOutlined />,
-    label: "Add Products",
-  
-  },
-  {
-    key: "addLay",
-    icon: <HomeOutlined />,
-    label: "Home Layouts",
-  
-  },
-  
-  
+  { key: "students", icon: <HomeOutlined />, label: "Students" },
 ];
 
-const headerIteam = [
+const StdUserItems = [
+  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
+  { key: "students", icon: <HomeOutlined />, label: "Students" },
+];
+const TrUserItems = [
+  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
+  { key: "teacher", icon: <HomeOutlined />, label: "Teacher" },
+];
+
+const headerItems = [
   { key: "1", text: "Sign up", icon: <UserSwitchOutlined /> },
   { key: "2", text: "Login", icon: <LogoutOutlined /> },
 ];
@@ -68,45 +50,30 @@ const headerIteam = [
 const App = ({ children, userType }) => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-
-  const handleHeaderClick = (key) => {
-    if (key === "1") {
-      localStorage.setItem("authToken", null);
-      localStorage.setItem("loggedInUserType", null);
-      navigate("/sign");
-    }
-    else if(key=='2'){
-      localStorage.setItem("authToken", null);
-      localStorage.setItem("loggedInUserType", null);
-      navigate("/login");
-    }
-  };
-
   const [isBackTopVisible, setIsBackTopVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop =
-        document.documentElement.scrollTop || document.body.scrollTop;
-      setIsBackTopVisible(scrollTop > 0);
+      setIsBackTopVisible(window.scrollY > 0);
     };
-
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleHeaderClick = (key) => {
+    localStorage.clear();
+    navigate(key === "1" ? "/sign" : "/login");
+  };
 
   const handleMenuClick = (item) => {
     if (item.key === "dashboard") {
       navigate("/");
     }
-    if (item.key === "categories") {
-      navigate("category");
+    if (item.key === "marks") {
+      navigate("/students");
     }
-    if (item.key === "grades") {
-      navigate("/grades");
+    if (item.key === "std") {
+      navigate("/add-std");
     }
     if (item.key === "timer") {
       navigate("/timer");
@@ -117,32 +84,29 @@ const App = ({ children, userType }) => {
     if (item.key === "addLay") {
       navigate("/add");
     }
-
-  };
-
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+    if (item.key === "science") {
+      navigate("/science");
+    }
+    if (item.key === "maths") {
+      navigate("/maths");
+    }
+  }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        onCollapse={setCollapsed}
         width={200}
-        style={{ backgroundColor: "#004f9a", overflow: "hidden", position: "fixed", height: "100vh", left: 0 }}
+        style={{ backgroundColor: "#004f9a", position: "fixed", height: "100vh" }}
       >
-        <div style={{ textAlign: "center", padding: "20px 0",marginBottom:'24px' }}>
-          
-        </div>
         <Menu
           theme="light"
-         // defaultSelectedKeys={}
           mode="inline"
-          items={userType === "admin" ? adminUserItems : adminUserItems}
+          items={adminUserItems}
           onClick={handleMenuClick}
-          style={{ backgroundColor: "#ffc221" }}
+          style={{ backgroundColor: "#ffc221", marginTop: "63px" }}
         />
       </Sider>
 
@@ -153,53 +117,32 @@ const App = ({ children, userType }) => {
             top: 0,
             left: collapsed ? 80 : 200,
             width: `calc(100% - ${collapsed ? 80 : 200}px)`,
-            height: "64px",
             backgroundColor: "#004f9a",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             zIndex: 1,
           }}
         >
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            {headerIteam.map((item) => (
-              <Button
-                key={item.key}
-                type="text"
-                icon={item.icon}
-                style={{ color: "Black", fontSize: "20px" }}
-                onClick={() => handleHeaderClick(item.key)}
-              >
-                {item.text}
-              </Button>
-            ))}
-          </div>
+          {headerItems.map((item) => (
+            <Button
+              key={item.key}
+              type="text"
+              icon={item.icon}
+              style={{ color: "Black", fontSize: "20px" }}
+              onClick={() => handleHeaderClick(item.key)}
+            >
+              {item.text}
+            </Button>
+          ))}
         </Header>
 
-        <Content style={{ marginTop: 64, padding: 24  }}>
-          <div
-            style={{
-              padding: 0,
-              minHeight: 360,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              borderRadius: borderRadiusLG,
-            }}
-          >
-            {isBackTopVisible && (
-              <FloatButton.Group shape="circle" style={{ right: 24 }}>
-                <FloatButton.BackTop visibilityHeight={0} />
-              </FloatButton.Group>
-            )}
-            {children}
-          </div>
+        <Content style={{ marginTop: 64, padding: 24 }}>
+          {isBackTopVisible && (
+            <FloatButton.Group shape="circle" style={{ right: 24 }}>
+              <FloatButton.BackTop visibilityHeight={0} />
+            </FloatButton.Group>
+          )}
+          {children}
         </Content>
 
         <Footer style={{ textAlign: "center" }}></Footer>

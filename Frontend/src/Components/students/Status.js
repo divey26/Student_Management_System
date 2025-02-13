@@ -5,7 +5,7 @@ import { Button, Typography, Table, message } from 'antd';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';  // Import recharts components
-import MarksModal from './MarksFormModel';  // Import the modal component
+import MarksModal from '../Teachers/MarksFormModel';  // Import the modal component
 import LayoutNew from '../../Layout';
 const { Title, Text } = Typography;
 

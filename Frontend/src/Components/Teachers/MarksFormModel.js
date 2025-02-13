@@ -3,7 +3,7 @@ import { Modal, Form, InputNumber, Select, Button } from 'antd';
 
 const { Option } = Select;
 
-const MarksModal = ({ isModalVisible, handleCancel, handleMarksChange, marks, setTerm, term, handleSubmit }) => {
+const MarksModal = ({ isModalVisible, handleCancel, handleMarksChange, marks, setTerm, term, handleSubmit, takenTerms }) => {
   return (
     <Modal
       title={`Enter Marks`}
@@ -19,9 +19,11 @@ const MarksModal = ({ isModalVisible, handleCancel, handleMarksChange, marks, se
             onChange={(value) => setTerm(value)} 
             value={term || undefined}
           >
-            <Option value="1">Term 1</Option>
-            <Option value="2">Term 2</Option>
-            <Option value="3">Term 3</Option>
+            {[1, 2, 3].map((termOption) => 
+              !takenTerms.includes(termOption) && (
+                <Option key={termOption} value={termOption}>Term {termOption}</Option>
+              )
+            )}
           </Select>
         </Form.Item>
 
