@@ -1,7 +1,5 @@
-// controllers/marksController.js
 const { Student, Marks } = require('../models/student');
 
-// Add marks for a student
 const addMarks = async (req, res) => {
   const { studentId, term, subjects } = req.body;
 
@@ -10,19 +8,16 @@ const addMarks = async (req, res) => {
   }
 
   try {
-    // Check if student exists
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ error: 'Student not found.' });
     }
 
-    // Check if marks for the term already exist
     const existingMarks = await Marks.findOne({ studentId, term });
     if (existingMarks) {
       return res.status(400).json({ error: 'Marks for this term already exist.' });
     }
 
-    // Create and save marks
     const newMarks = new Marks({ studentId, term, subjects });
     await newMarks.save();
 
@@ -32,7 +27,6 @@ const addMarks = async (req, res) => {
   }
 };
 
-// Fetch all students
 const getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
@@ -42,21 +36,17 @@ const getAllStudents = async (req, res) => {
   }
 };
 
-// Fetch marks for a specific student
-  const getMarksByStudent = async (req, res) => {
-    const { id } = req.params;
-    try {
-      const student = await Student.findById(id);
-      if (!student) {
-        return res.status(404).json({ error: 'Student not found' });
-      }
-      res.json(student);
-    } catch (error) {
-      res.status(500).json({ error: 'Error fetching student' });
+const getMarksByStudent = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const marks = await Marks.find({ studentId: id });
+    if (!marks.length) {
+      return res.json([]); // Return empty array instead of 404
     }
-  };
-  
-  
-  module.exports = { addMarks, getAllStudents, getMarksByStudent };
-  
+    res.json(marks);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching marks' });
+  }
+};
 
+module.exports = { addMarks, getAllStudents, getMarksByStudent };

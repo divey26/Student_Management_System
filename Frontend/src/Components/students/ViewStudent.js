@@ -1,8 +1,8 @@
-// ViewAllStudents.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Table, Typography, Button } from 'antd';
+import LayoutNew from '../../Layout';
 
 const { Title } = Typography;
 
@@ -54,10 +54,12 @@ const ViewAllStudents = () => {
   ];
 
   return (
-    <div style={{ padding: '20px' }}>
-      <Title level={2}>All Students</Title>
-      <Table columns={columns} dataSource={students} rowKey="_id" />
-    </div>
+    <LayoutNew>
+      <div style={{ padding: '20px' }}>
+        <Title level={2}>All Students</Title>
+        <Table columns={columns} dataSource={students} rowKey="_id" />
+      </div>
+    </LayoutNew>
   );
 };
 

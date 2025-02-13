@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Form, InputNumber, Select, Button, Typography, Card, List, message } from 'antd';
+import { Button, Typography, Card, List, message } from 'antd';
+import MarksModal from './MarksFormModel';  // Import the modal component
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 const MarksForm = () => {
-  const { id } = useParams();  
-  const [student, setStudent] = useState(null);
+  const { id } = useParams();  // Get student ID from URL
+  const [students, setStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState('');
+  const [selectedStudentName, setSelectedStudentName] = useState('');
   const [term, setTerm] = useState('');
   const [marks, setMarks] = useState({ 
     math: '', science: '', english: '', history: '', 
     geography: '', ict: '', art: '', p_e: '', health: '' 
   });
   const [studentMarks, setStudentMarks] = useState([]);
-  const [completedTerms, setCompletedTerms] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);  // Modal visibility state
 
   useEffect(() => {
-    const fetchStudent = async () => {
+    const fetchStudents = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/std/${id}`);
-        setStudent(res.data);
-        await fetchStudentMarks(id);  
+        const res = await axios.get('http://localhost:5000/api/std');
+        setStudents(res.data);
       } catch (error) {
-        console.error('Error fetching student:', error);
+        console.error('Error fetching students:', error);
       }
     };
-    fetchStudent();
-  }, [id]);
+    fetchStudents();
+  }, []);
+
+  useEffect(() => {
+    if (id && students.length > 0) {
+      const student = students.find(std => std._id === id);
+      if (student) {
+        setSelectedStudent(id);
+        setSelectedStudentName(student.name);
+      }
+      fetchStudentMarks(id);
+    }
+  }, [id, students]);
 
   const handleMarksChange = (subject, value) => {
     if (value >= 0 && value <= 100) {
@@ -39,21 +51,22 @@ const MarksForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!term) {
-      message.error('Please select a term.');
+    if (!selectedStudent || !term) {
+      message.error('Please select both a student and a term.');
       return;
     }
     try {
       await axios.post('http://localhost:5000/api/marks', { 
-        studentId: id, 
-        studentName: student.name,
+        studentId: selectedStudent, 
+        studentName: selectedStudentName,
         term: Number(term), 
         subjects: marks 
       });
       message.success('Marks added successfully!');
       setMarks({ math: '', science: '', english: '', history: '', geography: '', ict: '', art: '', p_e: '', health: '' });
       setTerm('');
-      await fetchStudentMarks(id);
+      await fetchStudentMarks(selectedStudent);
+      setIsModalVisible(false);  // Close the modal after successful submission
     } catch (error) {
       message.error('Error adding marks: ' + (error.response?.data?.error || 'Server error'));
     }
@@ -63,69 +76,46 @@ const MarksForm = () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/std/${studentId}`);
       setStudentMarks(res.data);
-      
-      // Extract completed terms
-      const termsCompleted = res.data.map(markEntry => markEntry.term);
-      setCompletedTerms(termsCompleted);
     } catch (error) {
       console.error('Error fetching student marks:', error);
       setStudentMarks([]);
     }
   };
 
-  if (!student) {
-    return <Text>Loading student information...</Text>;
-  }
+  const showModal = () => {
+    setIsModalVisible(true);  // Open the modal
+  };
 
-  // Get available terms to display in dropdown
-  const availableTerms = [1, 2, 3].filter(term => !completedTerms.includes(term));
+  const handleCancel = () => {
+    setIsModalVisible(false);  // Close the modal
+  };
 
   return (
     <div style={{ padding: '20px' }}>
-      <Title level={2}>Enter Marks for {student.name} ({student.indexNo})</Title>
+      <Title level={2}>
+        {selectedStudentName}
+        {selectedStudent && students.find(student => student._id === selectedStudent)?.indexNo && (
+          <span> ({students.find(student => student._id === selectedStudent).indexNo})</span>
+        )}
+      </Title>
 
-      {availableTerms.length > 0 ? (
-        <Form layout="vertical" onFinish={handleSubmit}>
-          <Form.Item label="Select Term" required>
-            <Select 
-              placeholder="Select Term" 
-              onChange={(value) => setTerm(value)} 
-              value={term || undefined}
-            >
-              {availableTerms.map(term => (
-                <Option key={term} value={term}>Term {term}</Option>
-              ))}
-            </Select>
-          </Form.Item>
+      <Button type="primary" onClick={showModal}>
+        Enter Marks
+      </Button>
 
-          {Object.keys(marks).map(subject => (
-            <Form.Item 
-              key={subject} 
-              label={subject.toUpperCase()} 
-              rules={[{ required: true, message: `Please input marks for ${subject.toUpperCase()}` }]}
-            >
-              <InputNumber 
-                min={0} 
-                max={100} 
-                placeholder={`Enter marks for ${subject.toUpperCase()}`} 
-                value={marks[subject]} 
-                onChange={(value) => handleMarksChange(subject, value)} 
-                style={{ width: '100%' }}
-              />
-            </Form.Item>
-          ))}
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit">Submit Marks</Button>
-          </Form.Item>
-        </Form>
-      ) : (
-        <Text type="warning">All terms are completed. No further marks can be entered.</Text>
-      )}
+      <MarksModal  // Use the modal component here
+        isModalVisible={isModalVisible}
+        handleCancel={handleCancel}
+        handleMarksChange={handleMarksChange}
+        marks={marks}
+        setTerm={setTerm}
+        term={term}
+        handleSubmit={handleSubmit}
+      />
 
       {studentMarks.length > 0 && (
         <div style={{ marginTop: '20px' }}>
-          <Title level={3}>Marks for {student.name}</Title>
+          <Title level={3}>Marks for {selectedStudentName} </Title>
           {studentMarks.map((markEntry, index) => (
             <Card key={index} title={`Term ${markEntry.term}`} style={{ marginBottom: '10px' }}>
               <List
