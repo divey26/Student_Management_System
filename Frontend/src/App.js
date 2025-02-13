@@ -1,6 +1,12 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+
+import SignUp from "./Components/common/signup";
+import Login from "./Components/common/Login";
+
+import AddTr from "./Components/Teachers/AddEditTeacher";
+
 import AddStudent from "./Components/students/AddStudent";
 import ViewAllStudents from "./Components/students/ViewStudent";
 import AddMarks from "./Components/Teachers/AddMarks";
@@ -14,13 +20,20 @@ function App() {
 
           <Router>
             <Routes>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+
             <Route path="/" element={<Dash />} />
             <Route path="/add-std" element={<AddStudent />} />
-            <Route path="/students" element={<ViewAllStudents />} />
             <Route path="/sts" element={<Status />} />
 
             <Route path="/students/:id/marks" element={<AddMarks />} />
             <Route path="/students/:id" element={<ViewAllStudents />} />
+
+
+
+            <Route path="/addTr" element={<AddTr />} />
+
             </Routes>
           </Router>
 

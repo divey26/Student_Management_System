@@ -47,7 +47,7 @@ const headerItems = [
   { key: "2", text: "Login", icon: <LogoutOutlined /> },
 ];
 
-const App = ({ children, userType }) => {
+const CommonLayout = ({ children, userType }) => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isBackTopVisible, setIsBackTopVisible] = useState(false);
@@ -92,6 +92,17 @@ const App = ({ children, userType }) => {
     }
   }
 
+  const getUserMenuItems = () => {
+    const userNo = localStorage.getItem('userNo');
+    if (userNo?.startsWith('S')) {
+      return StdUserItems;
+    } else if (userNo?.startsWith('TR')) {
+      return TrUserItems;
+    } else {
+      return adminUserItems;
+    }
+  }
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
@@ -104,7 +115,7 @@ const App = ({ children, userType }) => {
         <Menu
           theme="light"
           mode="inline"
-          items={adminUserItems}
+          items={getUserMenuItems()}
           onClick={handleMenuClick}
           style={{ backgroundColor: "#ffc221", marginTop: "63px" }}
         />
@@ -151,4 +162,4 @@ const App = ({ children, userType }) => {
   );
 };
 
-export default App;
+export default CommonLayout;

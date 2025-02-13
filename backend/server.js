@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { studentRoutes } = require('./routes/StudentRoutes');
 const marksRoutes = require('./routes/MarksRoutes');
+const authRoutes = require('./routes/UserRoutes');
 
 
 const app = express();
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 app.use('/api/std', studentRoutes);
 app.use('/api', marksRoutes);
+app.use('/api', authRoutes);  // API routes for signup and login
 
 
 const PORT = process.env.PORT || 5000;
