@@ -21,14 +21,14 @@ function App() {
           <Router>
             <Routes>
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
 
-            <Route path="/" element={<Dash />} />
+            <Route path="/dash" element={<Dash />} />
             <Route path="/add-std" element={<AddStudent />} />
             <Route path="/sts" element={<Status />} />
 
             <Route path="/students/:id/marks" element={<AddMarks />} />
-            <Route path="/students/:id" element={<ViewAllStudents />} />
+            <Route path="/students" element={<ViewAllStudents />} />
 
 
 

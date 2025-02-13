@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Typography, Table, Button } from 'antd';
 import axios from 'axios';
-import { Button, Typography, Table, message } from 'antd';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
-} from 'recharts';  // Import recharts components
-import MarksModal from '../Teachers/MarksFormModel';  // Import the modal component
 import LayoutNew from '../../Layout';
-const { Title, Text } = Typography;
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
-const MarksForm = () => {
-  const { id } = useParams();  // Get student ID from URL
+const { Title } = Typography;
+
+const ViewAllStudents = () => {
   const [students, setStudents] = useState([]);
+  const [studentMarks, setStudentMarks] = useState([]);
+  const [marks, setMarks] = useState({
+    math: '', science: '', english: '', history: '',
+    geography: '', ict: '', art: '', p_e: '', health: ''
+  });
   const [selectedStudent, setSelectedStudent] = useState('');
   const [selectedStudentName, setSelectedStudentName] = useState('');
-  const [term, setTerm] = useState('');
-  const [marks, setMarks] = useState({ 
-    math: '', science: '', english: '', history: '', 
-    geography: '', ict: '', art: '', p_e: '', health: '' 
-  });
-  const [studentMarks, setStudentMarks] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedStudentInfo, setSelectedStudentInfo] = useState({});
+  const userNo = localStorage.getItem('userNo');  // Get userNo from localStorage
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -35,15 +33,14 @@ const MarksForm = () => {
   }, []);
 
   useEffect(() => {
-    if (id && students.length > 0) {
-      const student = students.find(std => std._id === id);
-      if (student) {
-        setSelectedStudent(id);
-        setSelectedStudentName(student.name);
-      }
-      fetchStudentMarks(id);
+    const filteredStudent = students.find(student => student.indexNo === userNo);
+    if (filteredStudent) {
+      setSelectedStudent(filteredStudent._id);
+      setSelectedStudentName(filteredStudent.name);
+      setSelectedStudentInfo(filteredStudent);  // Set full student info
+      fetchStudentMarks(filteredStudent._id);
     }
-  }, [id, students]);
+  }, [students, userNo]);
 
   const fetchStudentMarks = async (studentId) => {
     try {
@@ -55,47 +52,7 @@ const MarksForm = () => {
     }
   };
 
-  const handleMarksChange = (subject, value) => {
-    if (value >= 0 && value <= 100) {
-      setMarks({ ...marks, [subject]: value });
-    } else if (value === undefined) {
-      setMarks({ ...marks, [subject]: '' });
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedStudent || !term) {
-      message.error('Please select both a student and a term.');
-      return;
-    }
-    try {
-      await axios.post('http://localhost:5000/api/marks', { 
-        studentId: selectedStudent, 
-        studentName: selectedStudentName,
-        term: Number(term), 
-        subjects: marks 
-      });
-      message.success('Marks added successfully!');
-      setMarks({ math: '', science: '', english: '', history: '', geography: '', ict: '', art: '', p_e: '', health: '' });
-      setTerm('');
-      await fetchStudentMarks(selectedStudent);
-      setIsModalVisible(false);
-    } catch (error) {
-      message.error('Error adding marks: ' + (error.response?.data?.error || 'Server error'));
-    }
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
   const takenTerms = studentMarks.map(markEntry => markEntry.term);
-
-  const isAddMarksDisabled = takenTerms.length >= 3;
 
   const columns = [
     {
@@ -110,7 +67,7 @@ const MarksForm = () => {
     })),
   ];
 
-  const calculateTotal = (term) => {
+  const calculateTermTotal = (term) => {
     return studentMarks.reduce((total, markEntry) => {
       if (markEntry.term === term) {
         Object.keys(markEntry.subjects).forEach(subject => {
@@ -125,34 +82,21 @@ const MarksForm = () => {
     key: 'total',
     subject: 'Total',
     ...takenTerms.reduce((acc, term) => {
-      acc[`term_${term}`] = calculateTotal(term);
+      acc[`term_${term}`] = calculateTermTotal(term);
       return acc;
     }, {}),
   };
 
-  const dataSourceWithTotal = [
-    ...Object.keys(marks).map(subject => ({
-      key: subject,
-      subject: subject.toUpperCase(),
-      ...studentMarks.reduce((acc, markEntry) => {
-        acc[`term_${markEntry.term}`] = markEntry.subjects[subject] || 'N/A';
-        return acc;
-      }, {}),
-    })),
-    totalRow,
-  ];
+  const dataSource = Object.keys(marks).map(subject => ({
+    key: subject,
+    subject: subject.toUpperCase(),
+    ...studentMarks.reduce((acc, markEntry) => {
+      acc[`term_${markEntry.term}`] = markEntry.subjects[subject] || 'N/A';
+      return acc;
+    }, {}),
+  }));
 
-  const columnsWithTotal = [
-    ...columns,
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-    },
-  ];
-
-  // Data for the chart (no "total" key included)
-  const chartDataWithoutTotal = Object.keys(marks).map(subject => {
+  const chartData = Object.keys(marks).map(subject => {
     const term1Marks = studentMarks.find(markEntry => markEntry.term === 1)?.subjects[subject] || 0;
     const term2Marks = studentMarks.find(markEntry => markEntry.term === 2)?.subjects[subject] || 0;
     const term3Marks = studentMarks.find(markEntry => markEntry.term === 3)?.subjects[subject] || 0;
@@ -165,62 +109,93 @@ const MarksForm = () => {
     };
   });
 
+  // Function to export the data as PDF
+  const exportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text(`Student Details: ${selectedStudentName}`, 10, 10);
+    doc.text(`Index Number: ${userNo}`, 10, 20);
+    doc.text(`Email: ${selectedStudentInfo.email || 'N/A'}`, 10, 30);
+    doc.text(`Class: ${selectedStudentInfo.grade || 'N/A'}`, 10, 40);
+
+    let yOffset = 50;
+    doc.text('Marks Table:', 10, yOffset);
+
+    yOffset += 10;
+    // Add table headers
+    const headers = ['Subject', ...takenTerms.map(term => `Term ${term}`)];
+    const rows = dataSource.map(data => [
+      data.subject,
+      ...takenTerms.map(term => data[`term_${term}`]),
+    ]);
+
+    doc.autoTable({
+      head: [headers],
+      body: rows,
+      startY: yOffset,
+      theme: 'grid',
+    });
+
+    yOffset = doc.lastAutoTable.finalY + 10;
+
+    // Add chart data
+    doc.text('Marks Visualization:', 10, yOffset);
+
+    doc.save('student_report.pdf');
+  };
+
   return (
     <LayoutNew>
       <div style={{ padding: '20px' }}>
-        <Title level={2}>
-          {selectedStudentName}
-          {selectedStudent && students.find(student => student._id === selectedStudent)?.indexNo && (
-            <span> ({students.find(student => student._id === selectedStudent).indexNo})</span>
-          )}
-        </Title>
+        <Title level={2}>Student Details</Title>
 
-        <Button type="primary" onClick={showModal} disabled={isAddMarksDisabled}>
-          Enter Marks
-        </Button>
+        {selectedStudent ? (
+          <div>
+            <p><strong>Index Number:</strong> {userNo}</p>
+            <p><strong>Name:</strong> {selectedStudentName}</p>
+            <p><strong>Email:</strong> {selectedStudentInfo.email || 'N/A'}</p>
+            <p><strong>Class:</strong> {selectedStudentInfo.grade || 'N/A'}</p>
 
-        <MarksModal
-          isModalVisible={isModalVisible}
-          handleCancel={handleCancel}
-          handleMarksChange={handleMarksChange}
-          marks={marks}
-          setTerm={setTerm}
-          term={term}
-          handleSubmit={handleSubmit}
-          takenTerms={takenTerms}
-        />
-
-        {studentMarks.length > 0 && (
-          <div style={{ marginTop: '20px' }}>
-            <Title level={3}>Marks for {selectedStudentName} </Title>
-            <Table
-              columns={columnsWithTotal}
-              dataSource={dataSourceWithTotal}
-              pagination={false}
-              rowKey="subject"
-            />
+            <div style={{ marginTop: '20px', textAlign: 'right' }}>
+            <Button type="primary" onClick={exportPDF}>Export as PDF</Button>
           </div>
-        )}
 
-        {/* Bar Chart Section */}
-        <div style={{ marginTop: '40px', height: 300 }}>
-          <Title level={3}>Marks Visualization</Title>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartDataWithoutTotal}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="subject" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="term1" fill="#8884d8" name="Term 1" />
-              <Bar dataKey="term2" fill="#82ca9d" name="Term 2" />
-              <Bar dataKey="term3" fill="#ff7300" name="Term 3" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+
+            {studentMarks.length > 0 && (
+              <div style={{ marginTop: '20px' }}>
+                <Table
+                  columns={columns}
+                  dataSource={[...dataSource, totalRow]} 
+                  pagination={false}
+                  rowKey="subject"
+                />
+              </div>
+            )}
+
+            <div style={{ marginTop: '40px', height: 300 }}>
+              <Title level={3}>Marks Visualization</Title>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="subject" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="term1" fill="#8884d8" name="Term 1" />
+                  <Bar dataKey="term2" fill="#82ca9d" name="Term 2" />
+                  <Bar dataKey="term3" fill="#ff7300" name="Term 3" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+
+          </div>
+        ) : (
+          <p>No student found with the given User No.</p>
+        )}
       </div>
     </LayoutNew>
   );
 };
 
-export default MarksForm;
+export default ViewAllStudents;

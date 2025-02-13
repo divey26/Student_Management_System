@@ -21,9 +21,9 @@ const Login = () => {
             localStorage.setItem('userNo', userNo);  // Save userNo to determine user type
 
             if (userNo.startsWith('S')) {
-                navigate('/');  // Redirect to student dashboard
+                navigate('/sts');  // Redirect to student dashboard
             } else if (userNo.startsWith('TR')) {
-                navigate('/st');  // Redirect to teacher dashboard
+                navigate('/dash');  // Redirect to teacher dashboard
             }
         } catch (error) {
             console.error('Error logging in:', error); // Debugging line
