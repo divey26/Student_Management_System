@@ -103,14 +103,6 @@ const TeacherForm = () => {
             </Select>
           </Form.Item>
 
-          {/* Password */}
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: 'Please enter the password!' }]}
-          >
-            <Input.Password placeholder="Enter Password" />
-          </Form.Item>
 
           {/* Submit Button */}
           <Form.Item>

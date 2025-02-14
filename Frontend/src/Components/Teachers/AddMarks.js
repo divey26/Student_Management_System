@@ -22,6 +22,8 @@ const MarksForm = () => {
   });
   const [studentMarks, setStudentMarks] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const UserNo = localStorage.getItem('userNo');
+
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -164,9 +166,14 @@ const MarksForm = () => {
           )}
         </Title>
 
-        <Button type="primary" onClick={showModal} disabled={isAddMarksDisabled}>
-          Enter Marks
+        <Button 
+            type="primary" 
+            onClick={showModal} 
+            disabled={isAddMarksDisabled || UserNo?.startsWith('AD')}
+            >
+                 Enter Marks
         </Button>
+
 
         <MarksModal
           isModalVisible={isModalVisible}

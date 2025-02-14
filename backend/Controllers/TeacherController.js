@@ -1,5 +1,4 @@
 const Teacher = require('../models/TeacherModel');
-const bcrypt = require('bcrypt');
 
 exports.getAllTeachers = async (req, res) => {
   try {
@@ -11,7 +10,7 @@ exports.getAllTeachers = async (req, res) => {
 };
 
 exports.addTeacher = async (req, res) => {
-  const { name, idNumber, phoneNumber, email, grade, subject, password } = req.body;
+  const { name, idNumber, phoneNumber, email, grade, subject } = req.body;
 
   // Validate grade and subject
   if (grade < 1 || grade > 10) {
@@ -30,7 +29,6 @@ exports.addTeacher = async (req, res) => {
 
   try {
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newTeacher = new Teacher({
       name,
@@ -39,7 +37,6 @@ exports.addTeacher = async (req, res) => {
       email,
       grade,
       subject,
-      password: hashedPassword
     });
 
     await newTeacher.save();
@@ -70,10 +67,7 @@ exports.updateTeacher = async (req, res) => {
   }
 
   const updateData = req.body;
-  if (password) {
-    // Hash the new password before updating
-    updateData.password = await bcrypt.hash(password, 10);
-  }
+
 
   try {
     const updatedTeacher = await Teacher.findByIdAndUpdate(id, updateData, { new: true });

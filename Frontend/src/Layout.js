@@ -21,10 +21,10 @@ const AdminUserItems = [
         icon: <HomeOutlined />,
         label: "Classes",
         children: [
-          { key: "grade6", icon: <UserSwitchOutlined />, label: "Grade 6" },
-          { key: "grade7", icon: <UserSwitchOutlined />, label: "Grade 7" },
-          { key: "grade8", icon: <UserSwitchOutlined />, label: "Grade 8" },
-          { key: "grade9", icon: <UserSwitchOutlined />, label: "Grade 9" },
+          { key: "6", icon: <UserSwitchOutlined />, label: "Grade 6" },
+          { key: "7", icon: <UserSwitchOutlined />, label: "Grade 7" },
+          { key: "8", icon: <UserSwitchOutlined />, label: "Grade 8" },
+          { key: "9", icon: <UserSwitchOutlined />, label: "Grade 9" },
          
         ],
       },
@@ -94,12 +94,16 @@ const CommonLayout = ({ children, userType }) => {
     if (item.key === "std") {
       navigate("/add-std");
     }
-    if (item.key === "df") {
-      navigate("/add-std");
+    if (item.key === "TRadd") {
+      navigate("/addtr");
     }
     if (item.key === "AdminDashboard") {
       navigate("/dash");
     }
+    if (item.key === "6" || item.key === "7" || item.key === "8" || item.key === "9") {
+      navigate(`/students/grade/${item.key}`);  // Navigate to the filtered students page with grade in the URL
+    }
+
 
   }
 

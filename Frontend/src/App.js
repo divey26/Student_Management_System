@@ -8,6 +8,7 @@ import Login from "./Components/common/Login";
 //Admin
 import AddTr from "./Components/Admin/AddEditTeacher";
 import Dash from "./Components/Dashboard";
+import Class from "./Components/Admin/Class";
 import Admin from "./Components/Admin/Admin";
 import AddStudent from "./Components/Admin/AddStudent";
 
@@ -36,6 +37,9 @@ function App() {
             <Route path="/add-std" element={<AddStudent />} />
             <Route path="/students" element={<ViewAllStudents />} />
             <Route path="/addTr" element={<AddTr />} />
+
+
+          <Route path="/students/grade/:grade" element={<Class />} />
 
 
               {/*STUDENTS */}

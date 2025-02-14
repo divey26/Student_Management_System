@@ -34,11 +34,6 @@ const teacherSchema = new mongoose.Schema({
       'Geography', 'Civics', 'ICT', 'English Literature', 'Tamil Literature', 
       'Commerce', 'PTS', 'PT', 'Sinhala', 'Islam'
     ],
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6  // You can adjust the length or add further validations
   }
 });
 
