@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Determine role based on userNo prefix
-        const role = userNo.startsWith('S') ? 'student' : userNo.startsWith('TR') ? 'teacher' : null;
+        const role = userNo.startsWith('S') ? 'student' : userNo.startsWith('TR') ? 'teacher' : userNo.startsWith('AD') ? 'admin' : null;
         if (!role) {
             console.log('Invalid user number:', userNo);  // Debugging line
             return res.status(400).json({ message: 'Invalid user number' });

@@ -87,12 +87,10 @@ const ViewAllStudents = () => {
   return (
     <LayoutNew>
       <div style={{ padding: '20px' }}>
-        <p>UserSIOP: {UserNo}</p>
         <br/>
         
         {teacher && (  // Only display teacher details if the data is available
-          <Card title="Teacher Details" style={{ marginBottom: '20px' }}>
-            <p><strong>Name:</strong> {teacher.name}</p>
+          <Card title= {`${teacher.name} ${UserNo}`} style={{ marginBottom: '20px' }}>
             <p><strong>Email:</strong> {teacher.email}</p>
             <p><strong>Phone Number:</strong> {teacher.phoneNumber}</p>
             <p><strong>Grade:</strong> {teacher.grade}</p>

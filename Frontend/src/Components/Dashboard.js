@@ -59,10 +59,10 @@ const Dashboard = () => {
             </Col>
           ))}
         </Row>
-
-        <Card style={{ textAlign: 'center' }}>
-  <Statistic title="Total Students" value={totalStudents} />
-</Card>
+     
+        <Card style={{ textAlign: 'center', marginTop:"10px"}}>
+          <Statistic title="Total Students" value={totalStudents} />
+        </Card>
 
 
         <Card title="Student List" style={{ marginTop: 20 }}>

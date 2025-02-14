@@ -23,7 +23,9 @@ const Login = () => {
             if (userNo.startsWith('S')) {
                 navigate('/sts');  // Redirect to student dashboard
             } else if (userNo.startsWith('TR')) {
-                navigate('/dash');  // Redirect to teacher dashboard
+                navigate('/students');  // Redirect to teacher dashboard
+            }else if (userNo.startsWith('AD')) {
+                navigate('/dash');
             }
         } catch (error) {
             console.error('Error logging in:', error); // Debugging line

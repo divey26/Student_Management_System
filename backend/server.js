@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+const adminRoutes = require('./routes/AdminRoutes');
 const { studentRoutes } = require('./routes/StudentRoutes');
 const marksRoutes = require('./routes/MarksRoutes');
 const authRoutes = require('./routes/UserRoutes');
@@ -25,6 +26,8 @@ app.use('/api/std', studentRoutes);
 app.use('/api', marksRoutes);
 app.use('/api', authRoutes);  // API routes for signup and login
 app.use('/api/teachers', teacherRoutes); 
+app.use('/api/admin', adminRoutes);
+
 
 
 const PORT = process.env.PORT || 5000;

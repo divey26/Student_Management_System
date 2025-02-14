@@ -7,15 +7,15 @@ import { useNavigate } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-const adminUserItems = [
-  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
+
+const AdminUserItems = [
+  { key: "AdminDashboard", icon: <HomeOutlined />, label: "Home" },
   {
     key: "students",
     icon: <HomeOutlined />,
     label: "Students",
     children: [
       { key: "std",icon: <HomeOutlined />, label: "Add Student" },
-      { key: "marks",icon: <HomeOutlined />, label: "All Students" },
       {
         key: "cls",
         icon: <HomeOutlined />,
@@ -28,7 +28,25 @@ const adminUserItems = [
          
         ],
       },
+
     ],
+    
+  },
+  { key: "Tr",icon: <HomeOutlined />, label: "Teachers",
+    children: [
+      { key: "TRadd",icon: <HomeOutlined />, label: "Add Teacher" },
+    ]
+   },
+
+];
+
+
+const TeacherUserItems = [
+  {
+    key: "students",
+    icon: <HomeOutlined />,
+    label: "Dashboard",
+   
   },
 ];
 
@@ -79,6 +97,9 @@ const CommonLayout = ({ children, userType }) => {
     if (item.key === "df") {
       navigate("/add-std");
     }
+    if (item.key === "AdminDashboard") {
+      navigate("/dash");
+    }
 
   }
 
@@ -87,7 +108,9 @@ const CommonLayout = ({ children, userType }) => {
     if (userNo?.startsWith('S')) {
       return StdUserItems;
     } else if (userNo?.startsWith('TR')) {
-      return adminUserItems;
+      return TeacherUserItems;
+    } else if (userNo?.startsWith('AD')) {
+      return AdminUserItems;
     } else {
       return 0;
     }
