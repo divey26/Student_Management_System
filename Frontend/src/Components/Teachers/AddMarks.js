@@ -4,13 +4,14 @@ import axios from 'axios';
 import { Button, Typography, Table, message } from 'antd';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
-} from 'recharts';  // Import recharts components
-import MarksModal from './MarksFormModel';  // Import the modal component
+} from 'recharts'; 
+import MarksModal from './MarksFormModel';  
 import LayoutNew from '../../Layout';
-const { Title, Text } = Typography;
+
+const { Title } = Typography;
 
 const MarksForm = () => {
-  const { id } = useParams();  // Get student ID from URL
+  const { id } = useParams();
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState('');
   const [selectedStudentName, setSelectedStudentName] = useState('');
@@ -48,7 +49,7 @@ const MarksForm = () => {
   const fetchStudentMarks = async (studentId) => {
     try {
       const res = await axios.get(`http://localhost:5000/api/std/${studentId}`);
-      setStudentMarks(res.data);
+      setStudentMarks(res.data || []);
     } catch (error) {
       console.error('Error fetching student marks:', error);
       setStudentMarks([]);
@@ -93,8 +94,7 @@ const MarksForm = () => {
     setIsModalVisible(false);
   };
 
-  const takenTerms = studentMarks.map(markEntry => markEntry.term);
-
+  const takenTerms = studentMarks?.map(markEntry => markEntry.term) || [];
   const isAddMarksDisabled = takenTerms.length >= 3;
 
   const columns = [
@@ -110,48 +110,37 @@ const MarksForm = () => {
     })),
   ];
 
-  const calculateTotal = (term) => {
-    return studentMarks.reduce((total, markEntry) => {
-      if (markEntry.term === term) {
-        Object.keys(markEntry.subjects).forEach(subject => {
-          total += markEntry.subjects[subject] || 0;
-        });
-      }
-      return total;
-    }, 0);
-  };
-
-  const totalRow = {
-    key: 'total',
-    subject: 'Total',
-    ...takenTerms.reduce((acc, term) => {
-      acc[`term_${term}`] = calculateTotal(term);
+  // Compute student marks table
+  const dataSourceWithTotal = Object.keys(marks).map(subject => ({
+    key: subject,
+    subject: subject.toUpperCase(),
+    ...studentMarks.reduce((acc, markEntry) => {
+      acc[`term_${markEntry.term}`] = markEntry.subjects[subject] || 'N/A';
       return acc;
     }, {}),
+  }));
+
+  // Calculate total marks for each term
+  const totalMarks = studentMarks.reduce((totals, markEntry) => {
+    Object.keys(markEntry.subjects).forEach(subject => {
+      totals[markEntry.term] = (totals[markEntry.term] || 0) + (markEntry.subjects[subject] || 0);
+    });
+    return totals;
+  }, {});
+
+  // Add total row
+  const totalRow = {
+    key: 'total',
+    subject: 'TOTAL',
+    ...Object.keys(totalMarks).reduce((acc, term) => {
+      acc[`term_${term}`] = totalMarks[term];
+      return acc;
+    }, {})
   };
 
-  const dataSourceWithTotal = [
-    ...Object.keys(marks).map(subject => ({
-      key: subject,
-      subject: subject.toUpperCase(),
-      ...studentMarks.reduce((acc, markEntry) => {
-        acc[`term_${markEntry.term}`] = markEntry.subjects[subject] || 'N/A';
-        return acc;
-      }, {}),
-    })),
-    totalRow,
-  ];
+  dataSourceWithTotal.push(totalRow);
 
-  const columnsWithTotal = [
-    ...columns,
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-    },
-  ];
-
-  // Data for the chart (no "total" key included)
+  // Prepare chart data
   const chartDataWithoutTotal = Object.keys(marks).map(subject => {
     const term1Marks = studentMarks.find(markEntry => markEntry.term === 1)?.subjects[subject] || 0;
     const term2Marks = studentMarks.find(markEntry => markEntry.term === 2)?.subjects[subject] || 0;
@@ -192,9 +181,9 @@ const MarksForm = () => {
 
         {studentMarks.length > 0 && (
           <div style={{ marginTop: '20px' }}>
-            <Title level={3}>Marks for {selectedStudentName} </Title>
+            <Title level={3}>Marks for {selectedStudentName}</Title>
             <Table
-              columns={columnsWithTotal}
+              columns={columns}
               dataSource={dataSourceWithTotal}
               pagination={false}
               rowKey="subject"

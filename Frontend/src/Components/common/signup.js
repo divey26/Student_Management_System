@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Alert, Card } from 'antd';
 
 const SignUp = () => {
     const [userNo, setUserNo] = useState('');
@@ -10,8 +11,7 @@ const SignUp = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSignUp = async (e) => {
-        e.preventDefault();
+    const handleSignUp = async (values) => {
         setError(''); // Clear any previous error
 
         // Basic form validation
@@ -35,56 +35,90 @@ const SignUp = () => {
     };
 
     return (
-        <div className="signup-container">
-            <h2>Sign Up</h2>
-            <form onSubmit={handleSignUp}>
-                <div>
-                    <label htmlFor="userNo">User No</label>
-                    <input 
-                        type="text" 
-                        id="userNo" 
-                        value={userNo} 
-                        onChange={(e) => setUserNo(e.target.value)} 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label htmlFor="name">Name</label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <input 
-                        type="password" 
-                        id="confirmPassword" 
-                        value={confirmPassword} 
-                        onChange={(e) => setConfirmPassword(e.target.value)} 
-                        required 
-                    />
-                </div>
+        <div style={styles.container}>
+            <Card style={styles.card}>
+                <h2>Sign Up</h2>
+                <Form
+                    onFinish={handleSignUp}
+                    layout="vertical"
+                    initialValues={{
+                        userNo: '',
+                        name: '',
+                        password: '',
+                        confirmPassword: ''
+                    }}
+                >
+                    <Form.Item
+                        label="User No"
+                        name="userNo"
+                        rules={[{ required: true, message: 'Please input your User No!' }]}
+                    >
+                        <Input 
+                            value={userNo}
+                            onChange={(e) => setUserNo(e.target.value)}
+                        />
+                    </Form.Item>
 
-                {error && <div className="error">{error}</div>}
+                    <Form.Item
+                        label="Name"
+                        name="name"
+                        rules={[{ required: true, message: 'Please input your Name!' }]}
+                    >
+                        <Input 
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </Form.Item>
 
-                <button type="submit">Sign Up</button>
-            </form>
+                    <Form.Item
+                        label="Password"
+                        name="password"
+                        rules={[{ required: true, message: 'Please input your Password!' }]}
+                    >
+                        <Input.Password
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Confirm Password"
+                        name="confirmPassword"
+                        rules={[{ required: true, message: 'Please confirm your Password!' }]}
+                    >
+                        <Input.Password
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                    </Form.Item>
+
+                    {error && <Alert message={error} type="error" />}
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" block>
+                            Sign Up
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
         </div>
     );
+};
+
+const styles = {
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f0f2f5'
+    },
+    card: {
+        width: '400px',
+        padding: '20px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        borderRadius: '8px',
+    }
 };
 
 export default SignUp;

@@ -1,4 +1,5 @@
 const Teacher = require('../models/TeacherModel');
+const bcrypt = require('bcrypt');
 
 exports.getAllTeachers = async (req, res) => {
   try {
@@ -10,15 +11,11 @@ exports.getAllTeachers = async (req, res) => {
 };
 
 exports.addTeacher = async (req, res) => {
-  const { name, idNumber, phoneNumber, email, grade, class: className, subject } = req.body;
+  const { name, idNumber, phoneNumber, email, grade, subject, password } = req.body;
 
-  // Validate grade, class, and subject
+  // Validate grade and subject
   if (grade < 1 || grade > 10) {
     return res.status(400).json({ message: 'Grade must be between 1 and 10' });
-  }
-
-  if (!['A', 'B', 'C', 'D', 'E'].includes(className)) {
-    return res.status(400).json({ message: 'Class must be one of A, B, C, D, or E' });
   }
 
   const validSubjects = [
@@ -32,7 +29,19 @@ exports.addTeacher = async (req, res) => {
   }
 
   try {
-    const newTeacher = new Teacher({ name, idNumber, phoneNumber, email, grade, class: className, subject });
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newTeacher = new Teacher({
+      name,
+      idNumber,
+      phoneNumber,
+      email,
+      grade,
+      subject,
+      password: hashedPassword
+    });
+
     await newTeacher.save();
     res.status(201).json(newTeacher);
   } catch (err) {
@@ -40,17 +49,14 @@ exports.addTeacher = async (req, res) => {
   }
 };
 
+
 exports.updateTeacher = async (req, res) => {
   const { id } = req.params;
-  const { grade, class: className, subject } = req.body;
+  const { grade, subject, password } = req.body;
 
-  // Validate grade, class, and subject
+  // Validate grade and subject
   if (grade && (grade < 1 || grade > 10)) {
     return res.status(400).json({ message: 'Grade must be between 1 and 10' });
-  }
-
-  if (className && !['A', 'B', 'C', 'D', 'E'].includes(className)) {
-    return res.status(400).json({ message: 'Class must be one of A, B, C, D, or E' });
   }
 
   const validSubjects = [
@@ -63,8 +69,14 @@ exports.updateTeacher = async (req, res) => {
     return res.status(400).json({ message: 'Invalid subject selected' });
   }
 
+  const updateData = req.body;
+  if (password) {
+    // Hash the new password before updating
+    updateData.password = await bcrypt.hash(password, 10);
+  }
+
   try {
-    const updatedTeacher = await Teacher.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedTeacher = await Teacher.findByIdAndUpdate(id, updateData, { new: true });
     if (!updatedTeacher) return res.status(404).json({ message: 'Teacher not found' });
     res.status(200).json(updatedTeacher);
   } catch (err) {
@@ -72,12 +84,26 @@ exports.updateTeacher = async (req, res) => {
   }
 };
 
+
+
 exports.deleteTeacher = async (req, res) => {
   const { id } = req.params;
   try {
     const deletedTeacher = await Teacher.findByIdAndDelete(id);
     if (!deletedTeacher) return res.status(404).json({ message: 'Teacher not found' });
     res.status(200).json({ message: 'Teacher deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+exports.getTeacherByIdNumber = async (req, res) => {
+  const { idNumber } = req.params;
+  try {
+    const teacher = await Teacher.findOne({ idNumber });
+    if (!teacher) return res.status(404).json({ message: 'Teacher not found' });
+    res.status(200).json(teacher);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

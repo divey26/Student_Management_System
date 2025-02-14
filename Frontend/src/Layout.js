@@ -10,9 +10,9 @@ const { SubMenu } = Menu;
 const adminUserItems = [
   { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
   {
-    key: "teacher",
+    key: "students",
     icon: <HomeOutlined />,
-    label: "Teacher",
+    label: "Students",
     children: [
       { key: "std",icon: <HomeOutlined />, label: "Add Student" },
       { key: "marks",icon: <HomeOutlined />, label: "All Students" },
@@ -30,21 +30,16 @@ const adminUserItems = [
       },
     ],
   },
-  { key: "students", icon: <HomeOutlined />, label: "Students" },
 ];
 
 const StdUserItems = [
   { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
   { key: "students", icon: <HomeOutlined />, label: "Students" },
 ];
-const TrUserItems = [
-  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
-  { key: "teacher", icon: <HomeOutlined />, label: "Teacher" },
-];
+
 
 const headerItems = [
-  { key: "1", text: "Sign up", icon: <UserSwitchOutlined /> },
-  { key: "2", text: "Login", icon: <LogoutOutlined /> },
+  { key: "2", text: "Logout", icon: <LogoutOutlined /> },
 ];
 
 const CommonLayout = ({ children, userType }) => {
@@ -61,9 +56,15 @@ const CommonLayout = ({ children, userType }) => {
   }, []);
 
   const handleHeaderClick = (key) => {
-    localStorage.clear();
-    navigate(key === "1" ? "/sign" : "/login");
+    if (key === "2") { // Logout option
+      localStorage.clear();  // Clear user data from localStorage
+      navigate("/"); // Navigate to the login page
+    }
+    if (key === "1") { // Assuming you have a sign option
+      navigate("/sign");  // Redirect to the sign page if needed
+    }
   };
+  
 
   const handleMenuClick = (item) => {
     if (item.key === "dashboard") {
@@ -75,21 +76,10 @@ const CommonLayout = ({ children, userType }) => {
     if (item.key === "std") {
       navigate("/add-std");
     }
-    if (item.key === "timer") {
-      navigate("/timer");
+    if (item.key === "df") {
+      navigate("/add-std");
     }
-    if (item.key === "addpro") {
-      navigate("/add-product");
-    }
-    if (item.key === "addLay") {
-      navigate("/add");
-    }
-    if (item.key === "science") {
-      navigate("/science");
-    }
-    if (item.key === "maths") {
-      navigate("/maths");
-    }
+
   }
 
   const getUserMenuItems = () => {
@@ -97,9 +87,9 @@ const CommonLayout = ({ children, userType }) => {
     if (userNo?.startsWith('S')) {
       return StdUserItems;
     } else if (userNo?.startsWith('TR')) {
-      return TrUserItems;
-    } else {
       return adminUserItems;
+    } else {
+      return 0;
     }
   }
 
