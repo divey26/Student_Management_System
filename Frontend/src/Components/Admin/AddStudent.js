@@ -78,7 +78,7 @@ const StudentForm = () => {
             name="grade"
             rules={[
               { required: true, message: 'Please enter the grade!' },
-              { type: 'number', min: 6, max: 9, message: 'Grade must be between 6 and 9!' }
+              { type: 'number', min: 6, max: 11, message: 'Grade must be between 6 and 9!' }
             ]}
           >
             <InputNumber style={{ width: '100%' }} placeholder="Enter Grade" />

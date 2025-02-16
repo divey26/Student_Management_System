@@ -2,9 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Table, Button } from 'antd';
 import axios from 'axios';
 import LayoutNew from '../../Layout';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const { Title } = Typography;
 
@@ -12,13 +22,20 @@ const ViewAllStudents = () => {
   const [students, setStudents] = useState([]);
   const [studentMarks, setStudentMarks] = useState([]);
   const [marks, setMarks] = useState({
-    math: '', science: '', english: '', history: '',
-    geography: '', ict: '', art: '', p_e: '', health: ''
+    math: '',
+    science: '',
+    english: '',
+    history: '',
+    geography: '',
+    ict: '',
+    art: '',
+    p_e: '',
+    health: '',
   });
   const [selectedStudent, setSelectedStudent] = useState('');
   const [selectedStudentName, setSelectedStudentName] = useState('');
   const [selectedStudentInfo, setSelectedStudentInfo] = useState({});
-  const userNo = localStorage.getItem('userNo');  // Get userNo from localStorage
+  const userNo = localStorage.getItem('userNo');
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -33,11 +50,11 @@ const ViewAllStudents = () => {
   }, []);
 
   useEffect(() => {
-    const filteredStudent = students.find(student => student.indexNo === userNo);
+    const filteredStudent = students.find((student) => student.indexNo === userNo);
     if (filteredStudent) {
       setSelectedStudent(filteredStudent._id);
       setSelectedStudentName(filteredStudent.name);
-      setSelectedStudentInfo(filteredStudent);  // Set full student info
+      setSelectedStudentInfo(filteredStudent);
       fetchStudentMarks(filteredStudent._id);
     }
   }, [students, userNo]);
@@ -52,7 +69,7 @@ const ViewAllStudents = () => {
     }
   };
 
-  const takenTerms = studentMarks.map(markEntry => markEntry.term);
+  const takenTerms = studentMarks.map((markEntry) => markEntry.term);
 
   const columns = [
     {
@@ -60,7 +77,7 @@ const ViewAllStudents = () => {
       dataIndex: 'subject',
       key: 'subject',
     },
-    ...takenTerms.map(term => ({
+    ...takenTerms.map((term) => ({
       title: `Term ${term}`,
       dataIndex: `term_${term}`,
       key: `term_${term}`,
@@ -70,7 +87,7 @@ const ViewAllStudents = () => {
   const calculateTermTotal = (term) => {
     return studentMarks.reduce((total, markEntry) => {
       if (markEntry.term === term) {
-        Object.keys(markEntry.subjects).forEach(subject => {
+        Object.keys(markEntry.subjects).forEach((subject) => {
           total += markEntry.subjects[subject] || 0;
         });
       }
@@ -80,14 +97,14 @@ const ViewAllStudents = () => {
 
   const totalRow = {
     key: 'total',
-    subject: 'Total',
+    subject: <strong>Total</strong>,
     ...takenTerms.reduce((acc, term) => {
-      acc[`term_${term}`] = calculateTermTotal(term);
+      acc[`term_${term}`] = <strong>{calculateTermTotal(term)}</strong>;
       return acc;
     }, {}),
   };
 
-  const dataSource = Object.keys(marks).map(subject => ({
+  const dataSource = Object.keys(marks).map((subject) => ({
     key: subject,
     subject: subject.toUpperCase(),
     ...studentMarks.reduce((acc, markEntry) => {
@@ -96,10 +113,10 @@ const ViewAllStudents = () => {
     }, {}),
   }));
 
-  const chartData = Object.keys(marks).map(subject => {
-    const term1Marks = studentMarks.find(markEntry => markEntry.term === 1)?.subjects[subject] || 0;
-    const term2Marks = studentMarks.find(markEntry => markEntry.term === 2)?.subjects[subject] || 0;
-    const term3Marks = studentMarks.find(markEntry => markEntry.term === 3)?.subjects[subject] || 0;
+  const chartData = Object.keys(marks).map((subject) => {
+    const term1Marks = studentMarks.find((markEntry) => markEntry.term === 1)?.subjects[subject] || 0;
+    const term2Marks = studentMarks.find((markEntry) => markEntry.term === 2)?.subjects[subject] || 0;
+    const term3Marks = studentMarks.find((markEntry) => markEntry.term === 3)?.subjects[subject] || 0;
 
     return {
       subject: subject.toUpperCase(),
@@ -109,8 +126,7 @@ const ViewAllStudents = () => {
     };
   });
 
-  // Function to export the data as PDF
-  const exportPDF = () => {
+  const exportPDF = async () => {
     const doc = new jsPDF();
 
     doc.text(`Student Details: ${selectedStudentName}`, 10, 10);
@@ -120,13 +136,12 @@ const ViewAllStudents = () => {
 
     let yOffset = 50;
     doc.text('Marks Table:', 10, yOffset);
-
     yOffset += 10;
-    // Add table headers
-    const headers = ['Subject', ...takenTerms.map(term => `Term ${term}`)];
-    const rows = dataSource.map(data => [
+
+    const headers = ['Subject', ...takenTerms.map((term) => `Term ${term}`)];
+    const rows = dataSource.map((data) => [
       data.subject,
-      ...takenTerms.map(term => data[`term_${term}`]),
+      ...takenTerms.map((term) => data[`term_${term}`]),
     ]);
 
     doc.autoTable({
@@ -138,8 +153,17 @@ const ViewAllStudents = () => {
 
     yOffset = doc.lastAutoTable.finalY + 10;
 
-    // Add chart data
-    doc.text('Marks Visualization:', 10, yOffset);
+    const chartElement = document.getElementById('chart-container');
+    if (chartElement) {
+      try {
+        const canvas = await html2canvas(chartElement, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        doc.text('Marks Visualization:', 10, yOffset);
+        doc.addImage(imgData, 'PNG', 10, yOffset + 10, 180, 80);
+      } catch (error) {
+        console.error('Error capturing chart:', error);
+      }
+    }
 
     doc.save('student_report.pdf');
   };
@@ -151,28 +175,30 @@ const ViewAllStudents = () => {
 
         {selectedStudent ? (
           <div>
-            <p><strong>Index Number:</strong> {userNo}</p>
-            <p><strong>Name:</strong> {selectedStudentName}</p>
-            <p><strong>Email:</strong> {selectedStudentInfo.email || 'N/A'}</p>
-            <p><strong>Class:</strong> {selectedStudentInfo.grade || 'N/A'}</p>
+            <p>
+              <strong>Index Number:</strong> {userNo}
+            </p>
+            <p>
+              <strong>Name:</strong> {selectedStudentName}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedStudentInfo.email || 'N/A'}
+            </p>
+            <p>
+              <strong>Class:</strong> {selectedStudentInfo.grade || 'N/A'}
+            </p>
 
             <div style={{ marginTop: '20px', textAlign: 'right' }}>
-            <Button type="primary" onClick={exportPDF}>Export as PDF</Button>
-          </div>
-
+              <Button type="primary" onClick={exportPDF}>
+                Export as PDF
+              </Button>
+            </div>
 
             {studentMarks.length > 0 && (
-              <div style={{ marginTop: '20px' }}>
-                <Table
-                  columns={columns}
-                  dataSource={[...dataSource, totalRow]} 
-                  pagination={false}
-                  rowKey="subject"
-                />
-              </div>
+              <Table columns={columns} dataSource={[...dataSource, totalRow]} pagination={false} rowKey="subject" />
             )}
 
-            <div style={{ marginTop: '40px', height: 300 }}>
+            <div id="chart-container" style={{ marginTop: '40px', height: 300 }}>
               <Title level={3}>Marks Visualization</Title>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
@@ -187,8 +213,6 @@ const ViewAllStudents = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
-
           </div>
         ) : (
           <p>No student found with the given User No.</p>

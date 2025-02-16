@@ -13,7 +13,7 @@ exports.addTeacher = async (req, res) => {
   const { name, idNumber, phoneNumber, email, grade, subject } = req.body;
 
   // Validate grade and subject
-  if (grade < 1 || grade > 10) {
+  if (grade < 6 || grade > 11) {
     return res.status(400).json({ message: 'Grade must be between 1 and 10' });
   }
 
@@ -52,7 +52,7 @@ exports.updateTeacher = async (req, res) => {
   const { grade, subject, password } = req.body;
 
   // Validate grade and subject
-  if (grade && (grade < 1 || grade > 10)) {
+  if (grade && (grade < 6 || grade > 11)) {
     return res.status(400).json({ message: 'Grade must be between 1 and 10' });
   }
 

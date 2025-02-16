@@ -51,7 +51,6 @@ const TeacherUserItems = [
 ];
 
 const StdUserItems = [
-  { key: "dashboard", icon: <HomeOutlined />, label: "Home" },
   { key: "students", icon: <HomeOutlined />, label: "Students" },
 ];
 

@@ -23,8 +23,8 @@ const teacherSchema = new mongoose.Schema({
   grade: {
     type: Number,
     required: true,
-    min: 1,
-    max: 10,
+    min: 6,
+    max: 11,
   },
   subject: {
     type: String,

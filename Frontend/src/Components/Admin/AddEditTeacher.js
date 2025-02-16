@@ -70,21 +70,20 @@ const TeacherForm = () => {
             <Input placeholder="example@example.com" />
           </Form.Item>
 
+
           {/* Grade */}
           <Form.Item
             label="Grade"
             name="grade"
-            rules={[
-              { required: true, message: 'Please select the grade!' },
-              { type: 'number', min: 1, max: 10, message: 'Grade must be between 1 and 10' }
-            ]}
+            rules={[{ required: true, message: 'Please select the grade!' }]}
           >
             <Select placeholder="Select Grade">
-              {[...Array(10).keys()].map(num => (
-                <Option key={num + 1} value={num + 1}>{num + 1}</Option>
+              {[6, 7, 8, 9, 10, 11].map(num => (
+                <Option key={num} value={num}>{num}</Option>
               ))}
             </Select>
           </Form.Item>
+
 
           {/* Subject */}
           <Form.Item
