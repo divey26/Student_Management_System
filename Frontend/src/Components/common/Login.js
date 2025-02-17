@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button, Form, Alert, Card } from 'antd';  // Import Ant Design components
+import { Link } from 'react-router-dom'; // Import Link component for navigation
 
 const Login = () => {
     const [userNo, setUserNo] = useState('');
@@ -52,7 +53,7 @@ const Login = () => {
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{  borderColor: 'white' }}
+                            style={{ borderColor: 'white' }}
                         />
                     </Form.Item>
                     <Form.Item>
@@ -60,6 +61,13 @@ const Login = () => {
                             Login
                         </Button>
                     </Form.Item>
+                    {/* Add Sign Up link */}
+                    <Form.Item>
+                         <Link to="/signup" style={{ color: '#ffc221', textAlign: 'center', display: 'block' }}>
+                                 Don't have an account? <span style={{ color: 'white' }}>Sign Up</span>
+                         </Link>
+                </Form.Item>
+
                 </Form>
             </Card>
         </div>

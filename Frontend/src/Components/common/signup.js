@@ -28,7 +28,7 @@ const SignUp = () => {
                 password
             });
             console.log('Sign up successful:', response.data);
-            navigate('/login');  // Redirect to login page after successful signup
+            navigate('/');  // Redirect to login page after successful signup
         } catch (err) {
             setError('Error signing up. Please try again.');
         }
@@ -36,8 +36,7 @@ const SignUp = () => {
 
     return (
         <div style={styles.container}>
-            <Card style={styles.card}>
-                <h2>Sign Up</h2>
+            <Card title={<span style={{ color: 'white' }}>Sign Up</span>} style={styles.card}>
                 <Form
                     onFinish={handleSignUp}
                     layout="vertical"
@@ -49,53 +48,57 @@ const SignUp = () => {
                     }}
                 >
                     <Form.Item
-                        label="User No"
+                        label={<span style={{ color: 'white' }}>User No</span>}
                         name="userNo"
                         rules={[{ required: true, message: 'Please input your User No!' }]}
                     >
                         <Input 
                             value={userNo}
                             onChange={(e) => setUserNo(e.target.value)}
+                            style={styles.input}
                         />
                     </Form.Item>
 
                     <Form.Item
-                        label="Name"
+                        label={<span style={{ color: 'white' }}>Name</span>}
                         name="name"
                         rules={[{ required: true, message: 'Please input your Name!' }]}
                     >
                         <Input 
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            style={styles.input}
                         />
                     </Form.Item>
 
                     <Form.Item
-                        label="Password"
+                        label={<span style={{ color: 'white' }}>Password</span>}
                         name="password"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
                     >
                         <Input.Password
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            style={styles.input}
                         />
                     </Form.Item>
 
                     <Form.Item
-                        label="Confirm Password"
+                        label={<span style={{ color: 'white' }}>Confirm Password</span>}
                         name="confirmPassword"
                         rules={[{ required: true, message: 'Please confirm your Password!' }]}
                     >
                         <Input.Password
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            style={styles.input}
                         />
                     </Form.Item>
 
                     {error && <Alert message={error} type="error" />}
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
+                        <Button type="primary" htmlType="submit" block style={styles.button}>
                             Sign Up
                         </Button>
                     </Form.Item>
@@ -116,8 +119,19 @@ const styles = {
     card: {
         width: '400px',
         padding: '20px',
+        backgroundColor: '#004f9a',
+        color: 'white',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
+    },
+    input: {
+        color: 'black',
+        backgroundColor: 'white',
+        borderColor: 'white'
+    },
+    button: {
+        backgroundColor: '#ffc221',
+        color: 'black',
     }
 };
 
