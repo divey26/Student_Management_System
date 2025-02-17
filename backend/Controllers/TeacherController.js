@@ -102,3 +102,23 @@ exports.getTeacherByIdNumber = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/*
+exports.getTeachersByGrade = async (req, res) => {
+  const { grade } = req.params;
+
+  if (grade < 6 || grade > 11) {
+    return res.status(400).json({ message: 'Grade must be between 6 and 11' });
+  }
+
+  try {
+    const teachers = await Teacher.find({ grade });
+    if (teachers.length === 0) {
+      return res.status(404).json({ message: 'No teachers found for this grade' });
+    }
+    res.status(200).json(teachers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};*/
+

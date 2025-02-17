@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Table, Typography, Button, Card } from 'antd';
-import LayoutNew from '../../Layout';
 
 const { Title } = Typography;
 
@@ -85,7 +84,6 @@ const ViewAllStudents = () => {
   ];
 
   return (
-    <LayoutNew>
       <div style={{ padding: '20px' }}>
         <br/>
         
@@ -101,7 +99,6 @@ const ViewAllStudents = () => {
         <Title level={2}>All Students</Title>
         <Table columns={columns} dataSource={filteredStudents} rowKey="_id" />
       </div>
-    </LayoutNew>
   );
 };
 

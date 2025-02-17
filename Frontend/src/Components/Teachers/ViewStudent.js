@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Table, Typography, Button, Card } from 'antd';
-import LayoutNew from '../../Layout';
 
 const { Title } = Typography;
 
@@ -31,6 +30,8 @@ const ViewAllStudents = () => {
     // Fetch teacher data based on UserNo
     const fetchTeacher = async () => {
       try {
+        console.log("UserNo from localStorage:", UserNo);
+
         const res = await axios.get(`http://localhost:5000/api/teachers/${UserNo}`); // Adjust the endpoint as needed
         setTeacher(res.data);  // Set teacher data
       } catch (error) {
@@ -44,11 +45,12 @@ const ViewAllStudents = () => {
 
   // Filter students based on teacher's grade
   useEffect(() => {
-    if (teacher && teacher.grade === 8) {
-      const grade8Students = students.filter(student => student.grade === 8);
+    if (teacher && teacher.grade) {
+      const grade8Students = students.filter(student => student.grade === teacher.grade);
       setFilteredStudents(grade8Students);
     } else {
-      setFilteredStudents(students); // If teacher's grade is not 8, show all students
+      setFilteredStudents([]); // No students available
+
     }
   }, [teacher, students]);
 
@@ -85,7 +87,6 @@ const ViewAllStudents = () => {
   ];
 
   return (
-    <LayoutNew>
       <div style={{ padding: '20px' }}>
         <br/>
         
@@ -99,9 +100,13 @@ const ViewAllStudents = () => {
         )}
         
         <Title level={2}>All Students</Title>
-        <Table columns={columns} dataSource={filteredStudents} rowKey="_id" />
+        <Table 
+          columns={columns} 
+          dataSource={filteredStudents} 
+          rowKey="_id" 
+          locale={{ emptyText: 'No students available' }} 
+        />
       </div>
-    </LayoutNew>
   );
 };
 

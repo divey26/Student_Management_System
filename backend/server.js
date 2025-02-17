@@ -8,6 +8,7 @@ const { studentRoutes } = require('./routes/StudentRoutes');
 const marksRoutes = require('./routes/MarksRoutes');
 const authRoutes = require('./routes/UserRoutes');
 const teacherRoutes = require('./routes/TeacherRoutes');
+const announcementRoutes = require('./routes/AnnouncementRoutes');
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api', marksRoutes);
 app.use('/api', authRoutes);  // API routes for signup and login
 app.use('/api/teachers', teacherRoutes); 
 app.use('/api/admin', adminRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Form, Input, InputNumber, Button, Typography, message, Spin } from 'antd';
 
-import LayoutNew from '../../Layout'
 const { Title } = Typography;
 
 const StudentForm = () => {
@@ -45,7 +44,6 @@ const StudentForm = () => {
   };
 
   return (
-    <LayoutNew>
     <div style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
       <Title level={2}>Add Student</Title>
       <Spin spinning={loading}>
@@ -92,7 +90,6 @@ const StudentForm = () => {
         </Form>
       </Spin>
     </div>
-    </LayoutNew>
   );
 };
 

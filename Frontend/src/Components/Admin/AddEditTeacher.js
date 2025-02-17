@@ -1,7 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import axios from 'axios';
-import LayoutNew from '../../Layout'
 
 const { Option } = Select;
 
@@ -20,7 +19,6 @@ const TeacherForm = () => {
   };
 
   return (
-    <LayoutNew>
       <div style={{ maxWidth: 600, margin: '50px auto', padding: '20px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Add Teacher Details</h2>
         <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -111,7 +109,7 @@ const TeacherForm = () => {
           </Form.Item>
         </Form>
       </div>
-    </LayoutNew>
+    
   );
 };
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Form, Input, Button, Table, Space, message } from 'antd';
-import LayoutNew from "../../Layout"
 
 
 const AdminPage = () => {
@@ -122,7 +121,6 @@ const AdminPage = () => {
   ];
 
   return (
-    <LayoutNew>
     <div>
       <h1>Admin Management</h1>
 
@@ -175,7 +173,6 @@ const AdminPage = () => {
         pagination={false}
       />
     </div>
-    </LayoutNew>
   );
 };
 

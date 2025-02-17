@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Table, Button } from 'antd';
 import axios from 'axios';
-import LayoutNew from '../../Layout';
 import {
   BarChart,
   Bar,
@@ -169,7 +168,6 @@ const ViewAllStudents = () => {
   };
 
   return (
-    <LayoutNew>
       <div style={{ padding: '20px' }}>
         <Title level={2}>Student Details</Title>
 
@@ -218,7 +216,6 @@ const ViewAllStudents = () => {
           <p>No student found with the given User No.</p>
         )}
       </div>
-    </LayoutNew>
   );
 };
 

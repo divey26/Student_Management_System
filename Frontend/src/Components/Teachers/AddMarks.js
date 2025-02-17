@@ -6,7 +6,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts'; 
 import MarksModal from './MarksFormModel';  
-import LayoutNew from '../../Layout';
 
 const { Title } = Typography;
 
@@ -157,7 +156,6 @@ const MarksForm = () => {
   });
 
   return (
-    <LayoutNew>
       <div style={{ padding: '20px' }}>
         <Title level={2}>
           {selectedStudentName}
@@ -215,7 +213,6 @@ const MarksForm = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </LayoutNew>
   );
 };
 

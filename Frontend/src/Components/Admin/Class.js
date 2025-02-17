@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Table, Card, Statistic, message, Button } from 'antd';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import LayoutNew from '../../Layout';
 import { useParams } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -50,7 +49,6 @@ const Dashboard = () => {
   ];
 
   return (
-    <LayoutNew>
       <div style={{ padding: 20 }}>
         {/* Display the grade passed in the URL */}
         {grade && (
@@ -63,7 +61,7 @@ const Dashboard = () => {
           <Table dataSource={students} columns={columns} rowKey="indexNo" />
         </Card>
       </div>
-    </LayoutNew>
+    
   );
 };
 

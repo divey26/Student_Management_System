@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { HomeOutlined, UserSwitchOutlined, LogoutOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import {UsergroupAddOutlined,  ContactsOutlined, NotificationFilled, UserOutlined,  UserAddOutlined ,HomeOutlined, UserSwitchOutlined, LogoutOutlined, AlertOutlined } from "@ant-design/icons";
 import { Layout, Menu, Button } from "antd";
 import { FloatButton } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -15,10 +15,10 @@ const AdminUserItems = [
     icon: <HomeOutlined />,
     label: "Students",
     children: [
-      { key: "std",icon: <HomeOutlined />, label: "Add Student" },
+      { key: "std",icon: <UserAddOutlined />, label: "Add Student" },
       {
         key: "cls",
-        icon: <HomeOutlined />,
+        icon: <ContactsOutlined />,
         label: "Classes",
         children: [
           { key: "6", icon: <UserSwitchOutlined />, label: "Grade 6" },
@@ -32,11 +32,14 @@ const AdminUserItems = [
     ],
     
   },
-  { key: "Tr",icon: <HomeOutlined />, label: "Teachers",
+  { key: "Tr",icon: < UserOutlined/>, label: "Teachers",
     children: [
-      { key: "TRadd",icon: <HomeOutlined />, label: "Add Teacher" },
+      { key: "TRadd",icon: <UsergroupAddOutlined />, label: "Add Teacher" },
     ]
    },
+
+   { key: "admins", icon: <UserAddOutlined />, label: "Admin" },
+
 
 ];
 
@@ -44,14 +47,17 @@ const AdminUserItems = [
 const TeacherUserItems = [
   {
     key: "students",
-    icon: <HomeOutlined />,
+    icon: <UserOutlined />,
     label: "Dashboard",
    
   },
+  { key: "add-announ", icon: <AlertOutlined />, label: "Add Announcements" },
+
 ];
 
 const StdUserItems = [
-  { key: "students", icon: <HomeOutlined />, label: "Students" },
+  { key: "students", icon: <UserOutlined />, label: "Students" },
+  { key: "announ", icon: <NotificationFilled />, label: "Announcements" },
 ];
 
 
@@ -102,7 +108,18 @@ const CommonLayout = ({ children, userType }) => {
     if (item.key === "6" || item.key === "7" || item.key === "8" || item.key === "9") {
       navigate(`/students/grade/${item.key}`);  // Navigate to the filtered students page with grade in the URL
     }
-
+    if (item.key === "students") {
+      navigate("/sts");
+    }
+    if (item.key === "add-announ") {
+      navigate("/AddAnoun");
+    }
+    if (item.key === "announ") {
+      navigate("/Announ");
+    }
+    if (item.key === "admins") {
+      navigate("/admin");
+    }
 
   }
 
